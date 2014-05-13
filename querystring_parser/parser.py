@@ -5,7 +5,7 @@ Created on 2011-05-12
 @author: berni
 '''
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 
 def has_variable_name(s):
@@ -112,15 +112,15 @@ def parse(query_string, unquote=True, encoding='utf-8'):
         try:
             if unquote:
                 (var, val) = element.split("=")
-                var = urllib.unquote_plus(var)
-                val = urllib.unquote_plus(val)
+                var = urllib.parse.unquote_plus(var)
+                val = urllib.parse.unquote_plus(val)
             else:
                 (var, val) = element.split("=")
         except ValueError:
             raise MalformedQueryStringError
-        if encoding:
-            var = var.decode(encoding)
-            val = val.decode(encoding)
+        #if encoding:
+            #var = var.decode(encoding)
+            #val = val.decode(encoding)
         plist.append(parser_helper(var, val))
     for di in plist:
         (k, v) = di.popitem()
@@ -140,7 +140,7 @@ def parse(query_string, unquote=True, encoding='utf-8'):
 if __name__ == '__main__':
     """Compare speed with Django QueryDict"""
     from timeit import Timer
-    from tests import KnownValues
+    from .tests import KnownValues
     import os
     import sys
     from django.core.management import setup_environ
@@ -158,6 +158,6 @@ if __name__ == '__main__':
         t = Timer(statement, "from __main__ import parse")
         td = Timer(statementd, "from django import http")
         tqs = Timer(statementqs, "from urlparse import parse_qs")
-        print "Test string nr ".ljust(15), "querystring-parser".ljust(22), "Django QueryDict".ljust(22), "parse_qs"
-        print str(i).ljust(15), str(min(t.repeat(3, 10000))).ljust(22), str(min(td.repeat(3, 10000))).ljust(22), min(tqs.repeat(3, 10000))
+        print("Test string nr ".ljust(15), "querystring-parser".ljust(22), "Django QueryDict".ljust(22), "parse_qs")
+        print(str(i).ljust(15), str(min(t.repeat(3, 10000))).ljust(22), str(min(td.repeat(3, 10000))).ljust(22), min(tqs.repeat(3, 10000)))
         i += 1
